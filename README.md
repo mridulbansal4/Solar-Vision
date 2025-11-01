@@ -1,73 +1,119 @@
-# Welcome to your Lovable project
+Based on the files you've provided for your project, here is a new, detailed `README.md` file tailored to "Solar-Vision".
 
-## Project info
+-----
 
-**URL**: https://lovable.dev/projects/d155b0a0-2419-42e1-adc3-a1f74e06d45e
+# Solar-Vision ☀️
 
-## How can I edit this code?
+Solar-Vision is a web application designed to predict monthly solar energy generation (in kWh) for a given location in Pune, India. Users can input their location, available land area, and average monthly electricity consumption to receive a customized forecast, helping them assess their solar energy potential.
 
-There are several ways of editing your application.
+The application uses a machine learning model trained on historical NASA data for Pune, combined with real-time weather forecasts from the Open-Meteo API, to provide accurate predictions.
 
-**Use Lovable**
+## Features
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/d155b0a0-2419-42e1-adc3-a1f74e06d45e) and start prompting.
+  * **Custom Solar Forecast:** Get an estimated monthly solar energy generation (kWh) based on your specific parameters.
+  * **Interactive Form:** Easy-to-use interface to input your location (Pune neighborhood), land area (in acres), and monthly electricity consumption.
+  * **Real-time Data:** Utilizes live 7-day weather forecasts to ensure predictions are based on current atmospheric conditions.
+  * **ML-Powered Backend:** Employs a Scikit-learn (RandomForest) model for robust and accurate energy prediction.
 
-Changes made via Lovable will be committed automatically to this repo.
+## Technology Stack
 
-**Use your preferred IDE**
+This project is a full-stack application composed of a React frontend and a Flask backend.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Frontend
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+  * **Framework:** [React](https://reactjs.org/)
+  * **Language:** [TypeScript](https://www.typescriptlang.org/)
+  * **Bundler:** [Vite](https://vitejs.dev/)
+  * **UI:** [shadcn-ui](https://ui.shadcn.com/)
+  * **Styling:** [Tailwind CSS](https://tailwindcss.com/)
 
-Follow these steps:
+### Backend
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+  * **Framework:** [Flask](https://flask.palletsprojects.com/)
+  * **Language:** [Python](https://www.python.org/)
+  * **ML Library:** [Scikit-learn](https://scikit-learn.org/stable/)
+  * **Data Handling:** [Pandas](https://pandas.pydata.org/) & [NumPy](https://numpy.org/)
+  * **Data Source:** [Open-Meteo API](https://open-meteo.com/) (for live weather)
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## How It Works
 
-# Step 3: Install the necessary dependencies.
-npm i
+1.  **User Input:** The user provides their location, land area (acres), and monthly consumption (kWh) via the React frontend.
+2.  **API Request:** The frontend sends the latitude, longitude, and acres to the `/predict` endpoint on the Flask backend.
+3.  **Weather Fetching:** The backend server calls the Open-Meteo API to get a 7-day hourly forecast for the given coordinates, specifically requesting temperature (`temperature_2m`) and Global Horizontal Irradiance (`shortwave_radiation`).
+4.  **Data Processing:** The hourly forecast data is aggregated into daily averages for temperature and daily sums for GHI (converted from W/m² to kWh/m²).
+5.  **Prediction:** This processed data is fed into a pre-trained `RandomForestRegressor` model (`solar_model_nasa_pune.pkl`). The model predicts the daily energy generation in `Solar_kWh_per_Acre`.
+6.  **Final Calculation:** The daily-per-acre prediction is scaled by the user's provided `acres`, and the average of the 7-day forecast is used to estimate the total energy for an average month (`avg_daily_pred * 30.4`).
+7.  **Response:** The backend returns the final `predicted_kwh_month` to the frontend, which displays it to the user.
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+### Machine Learning Model
 
-**Edit a file directly in GitHub**
+The prediction model is a `RandomForestRegressor` trained on the `solar_data_nasa_pune.csv` dataset.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+  * **Model File:** `solar_model_nasa_pune.pkl`
+  * **Target Variable:** `Solar_kWh_per_Acre`
+  * **Training Features:**
+      * `LAT` (Latitude)
+      * `LON` (Longitude)
+      * `ACRES`
+      * `MONTH`
+      * `DAY_OF_YEAR`
+      * `ALLSKY_SFC_SW_DWN` (GHI)
+      * `T2M` (Temperature)
 
-**Use GitHub Codespaces**
+## How to Run Locally
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+To run this project, you'll need to start both the backend server and the frontend development server.
 
-## What technologies are used for this project?
+### Backend (Flask Server)
 
-This project is built with:
+1.  **Navigate to the backend directory:**
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+    ```sh
+    cd backend
+    ```
 
-## How can I deploy this project?
+2.  **Create and activate a virtual environment:**
 
-Simply open [Lovable](https://lovable.dev/projects/d155b0a0-2419-42e1-adc3-a1f74e06d45e) and click on Share -> Publish.
+    ```sh
+    # Windows
+    python -m venv venv
+    .\venv\Scripts\activate
 
-## Can I connect a custom domain to my Lovable project?
+    # macOS / Linux
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
 
-Yes, you can!
+3.  **Install Python dependencies:**
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+    ```sh
+    pip install -r requirements.txt
+    ```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+4.  **Run the Flask server:**
+
+    ```sh
+    python app.py
+    ```
+
+    The backend will be running on `http://127.0.0.1:5000/`.
+
+### Frontend (Vite + React)
+
+1.  **Open a new terminal** and navigate to the **root project directory**.
+
+2.  **Install Node.js dependencies:**
+
+    ```sh
+    npm install
+    ```
+
+3.  **Start the frontend development server:**
+
+    ```sh
+    npm run dev
+    ```
+
+4.  Open your browser and navigate to the URL provided by Vite (usually `http://localhost:5173` or `http://localhost:8080`).
+
+-----
