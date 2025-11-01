@@ -1,6 +1,4 @@
-Based on the files you've provided for your project, here is a new, detailed `README.md` file tailored to "Solar-Vision".
 
------
 
 # Solar-Vision ☀️
 
