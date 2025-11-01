@@ -1,6 +1,6 @@
 
 
-# Solar-Vision ☀️
+# Solar-Vision 
 
 Solar-Vision is a web application designed to predict monthly solar energy generation (in kWh) for a given location in Pune, India. Users can input their location, available land area, and average monthly electricity consumption to receive a customized forecast, helping them assess their solar energy potential.
 
